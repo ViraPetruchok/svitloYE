@@ -14,30 +14,56 @@ class _NewsPageState extends State<NewsPage> {
   bool _isLoading = true;
 
   Future<void> fetchNews() async {
-  try {
-    final response = await http.get(Uri.parse('https://rsshub.app/telegram/channel/lvivoblenergo'));
-    print("Статус код відповіді: ${response.statusCode}");
-    if (response.statusCode == 200) {
-      final rssFeed = RssFeed.parse(response.body);
+    try {
+      final response = await http.get(Uri.parse(
+          'https://corsproxy.io/?url=https://rsshub.app/telegram/channel/lvivoblenergo'));
+      if (response.statusCode == 200) {
+        final rssFeed = RssFeed.parse(response.body);
+        setState(() {
+          _items = rssFeed.items;
+          _isLoading = false;
+        });
+      } else {
+        throw Exception('Помилка завантаження RSS: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Помилка: $e');
       setState(() {
-        _items = rssFeed.items;
         _isLoading = false;
       });
-    } else {
-      throw Exception('Помилка завантаження RSS: ${response.statusCode}');
     }
-  } catch (e) {
-    print('Помилка: $e');
-    setState(() {
-      _isLoading = false;
-    });
   }
-}
 
   @override
   void initState() {
     super.initState();
     fetchNews();
+  }
+
+  void _showNewsDialog(RssItem item) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.grey[900],
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        title: Text(
+          item.title ?? 'Новина',
+          style: const TextStyle(color: Colors.yellow, fontWeight: FontWeight.bold),
+        ),
+        content: SingleChildScrollView(
+          child: Text(
+            item.description ?? 'Деталі відсутні',
+            style: const TextStyle(color: Colors.white, height: 1.4),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Закрити', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -47,36 +73,42 @@ class _NewsPageState extends State<NewsPage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: Colors.yellow))
           : _items.isEmpty
-              ? const Center(child: Text('Немає новин', style: TextStyle(color: Colors.white)))
-              : ListView.builder(
+              ? const Center(
+                  child: Text(
+                    'Немає новин',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                )
+              : ListView.separated(
+                  padding: const EdgeInsets.all(16),
                   itemCount: _items.length,
+                  separatorBuilder: (_, __) => const Divider(color: Colors.grey),
                   itemBuilder: (context, index) {
                     final item = _items[index];
                     return ListTile(
-                      title: Text(item.title ?? '',
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                      subtitle: Text(item.pubDate ?? '',
-                          style: const TextStyle(color: Colors.white60)),
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (_) => AlertDialog(
-                            backgroundColor: Colors.grey[900],
-                            title: Text(item.title ?? '',
-                                style: const TextStyle(color: Colors.yellow)),
-                            content: SingleChildScrollView(
-                              child: Text(item.description ?? '',
-                                  style: const TextStyle(color: Colors.white)),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: const Text('Закрити', style: TextStyle(color: Colors.white)),
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(
+                        item.title ?? 'Без назви',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                      ),
+                      subtitle: item.pubDate != null
+                          ? Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(
+                                item.pubDate!,
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 13,
+                                ),
                               ),
-                            ],
-                          ),
-                        );
-                      },
+                            )
+                          : null,
+                      trailing: const Icon(Icons.arrow_forward_ios, color: Colors.yellow, size: 16),
+                      onTap: () => _showNewsDialog(item),
                     );
                   },
                 ),
