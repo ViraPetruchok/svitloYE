@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:svitlo_ye/screens/region_select_page.dart';
 
 class PowerOutagePage extends StatefulWidget {
   const PowerOutagePage({super.key});
@@ -96,12 +97,10 @@ class _PowerOutagePageState extends State<PowerOutagePage> {
               ),
               const SizedBox(height: 50),
 
-              
-
               // Поточний час
-              Text(
+              const Text(
                 'Поточний час',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   color: Colors.white70,
                 ),
@@ -140,22 +139,46 @@ class _PowerOutagePageState extends State<PowerOutagePage> {
               const Spacer(),
 
               // Кнопка оновлення
-             const SizedBox(height: 12),
-ElevatedButton.icon(
-  onPressed: _refreshData,
-  icon: const Icon(Icons.refresh, color: Colors.white),
-  label: const Text(
-    "Оновити дані",
-    style: TextStyle(color: Colors.white),
-  ),
-  style: ElevatedButton.styleFrom(
-    backgroundColor: Colors.grey[800],
-    foregroundColor: Colors.white,
-    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(8),
-    ),
-  
+              ElevatedButton.icon(
+                onPressed: _refreshData,
+                icon: const Icon(Icons.refresh, color: Colors.white),
+                label: const Text(
+                  "Оновити дані",
+                  style: TextStyle(color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey[800],
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // Кнопка зміни регіону
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RegionSelectPage(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.location_on, color: Colors.white),
+                label: const Text(
+                  "Змінити регіон",
+                  style: TextStyle(color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey[700],
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
               ),
             ],

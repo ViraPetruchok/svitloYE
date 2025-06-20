@@ -5,28 +5,25 @@ import 'package:url_launcher/url_launcher.dart';
 class InfoPage extends StatelessWidget {
   const InfoPage({super.key});
 
-  // Функція для відкриття URL
   Future<void> _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
       throw 'Не вдається відкрити $url';
     }
   }
 
-  // Функція для відкриття поштової програми для написання відгуку
   Future<void> _sendFeedback() async {
     final Uri emailLaunchUri = Uri(
       scheme: 'mailto',
       path: 'kkv2896@gmail.com',
-      queryParameters: {
-        'subject': 'Відгук про додаток SvitloYe',
-      },
+      queryParameters: {'subject': 'Відгук про додаток SvitloYe'},
     );
-    if (await canLaunch(emailLaunchUri.toString())) {
-      await launch(emailLaunchUri.toString());
+    if (await canLaunchUrl(emailLaunchUri)) {
+      await launchUrl(emailLaunchUri);
     } else {
-      throw 'Не вдалося відкрити поштовий клієнт для відгуку';
+      throw 'Не вдалося відкрити поштовий клієнт';
     }
   }
 
@@ -49,49 +46,60 @@ class InfoPage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             const Text(
-              'Цей додаток допомагає відстежувати відключення світла в Україні.\n'
-              'На карті можна переглянути стан світла по регіонах.\n'
-              'Ви також можете отримувати актуальні новини та інформацію про планові відключення.\n'
-              'Зручний інтерфейс дозволяє швидко дізнаватися про стан електропостачання у вашому регіоні.',
-              style: TextStyle(color: Colors.white, fontSize: 16),
-              ),
+              'Застосунок для відстеження відключень світла в Україні. Доступ до карти, новин та іноформувань про відключення — у зручному та зрозумілому інтерфейсі.',
+              style: TextStyle(color: Colors.white, fontSize: 16, height: 1.5),
+            ),
             const SizedBox(height: 24),
             const Text(
-              'Про розробника:',
+              'Розробниця:',
               style: TextStyle(color: Colors.yellow, fontSize: 20),
             ),
             const Text(
-              'Розроблено студенткою ІТ-напряму з України, яка прагне покращити інформування громадян про відключення електроенергії в умовах воєнного часу. Цей додаток створено з метою забезпечення швидкого доступу до актуальної інформації про стан електропостачання в регіонах України.',
-              style: TextStyle(color: Colors.white, fontSize: 16),
-              ),
+              'Віра Петручок — студентка ІТ-напряму з України, яка прагне покращити доступ до важливої інформації в умовах воєнного часу.',
+              style: TextStyle(color: Colors.white, fontSize: 16, height: 1.5),
+            ),
             const SizedBox(height: 24),
             const Text(
-              'Контакти:',
+              'Технічна підтримка:',
               style: TextStyle(color: Colors.yellow, fontSize: 20),
             ),
             const Text(
-              'Пошта: kkv2896@gmail.com\n',
+              'Якщо ви зіткнулися з проблемою або хочете залишити відгук — напишіть на пошту або в соцмережі нижче.',
               style: TextStyle(color: Colors.white, fontSize: 16),
             ),
-            const Text(
-              'Номер телефону: +380930426736',
-              style: TextStyle(color: Colors.white, fontSize: 16),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                const Icon(Icons.email, color: Colors.yellow),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: _sendFeedback,
+                  child: const Text(
+                    'kkv2896@gmail.com',
+                    style: TextStyle(color: Colors.white, decoration: TextDecoration.underline),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const Icon(Icons.phone_android, color: Colors.yellow),
+                const SizedBox(width: 8),
+                const Text(
+                  '+380930426736',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ],
             ),
             const SizedBox(height: 24),
+            const Divider(color: Colors.grey),
+            const SizedBox(height: 16),
             const Text(
-              'Дякую ЗСУ за можливість створювати',
-              style: TextStyle(color: Colors.white70, fontSize: 14),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Версія 1.0.0 (beta)',
-              style: TextStyle(color: Colors.grey, fontSize: 12),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Підтримуйте мене в соцмережах:',
+              'Підтримайте розробницю в соцмережах:',
               style: TextStyle(color: Colors.yellow, fontSize: 20),
             ),
+            const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -111,7 +119,14 @@ class InfoPage extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
+            const Center(
+              child: Text(
+                'Версія 1.0.0 (beta)\nДякую ЗСУ за можливість розвивати проєкти',
+                style: TextStyle(color: Colors.grey, fontSize: 13),
+                textAlign: TextAlign.center,
+              ),
+            ),
           ],
         ),
       ),
